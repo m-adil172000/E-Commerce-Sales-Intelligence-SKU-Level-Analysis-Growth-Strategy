@@ -1,4 +1,4 @@
-# E-Commerce-Sales-Intelligence: SKU-Level-Analysis-Growth-Strategy
+# E-Commerce Revenue Diagnostics: SKU Sales, Stockouts & Category Trends
 
 
 
