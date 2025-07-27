@@ -201,29 +201,30 @@ on t1.FEED_DATE = t2.FEED_DATE;
 
 -- EXTRA-1:  Estimate the revenue that could have been earned if the product wasn't out of stock during some views.
 
-with merged as
-(
-select 
-	t1.SKU_NAME, 
+WITH merged AS (
+  SELECT 
+    t1.SKU_NAME, 
     t1.FEED_DATE, 
-    t1.CATEGORY, 
-    t1.SUB_CATEGORY, 
     t1.ORDERED_REVENUE, 
     t1.ORDERED_UNITS, 
-    t1.REP_OOS, 
+    t1.REP_OOS / 100.0 AS REP_OOS_RATIO, -- convert to decimal
     t2.VIEWS, 
-    (t2.UNITS/t2.VIEWS) as UNIT_CONVERSION,  
-    (t1.ORDERED_REVENUE/t1.ORDERED_UNITS) as avg_selling_price
-from sales_data as t1
-inner join glance_views as t2
-on t1.SKU_NAME = t2.SKU_NAME and t1.FEED_DATE = t2.FEED_DATE
+    CASE 
+      WHEN t2.VIEWS > 0 THEN t2.UNITS * 1.0 / t2.VIEWS 
+      ELSE 0 
+    END AS UNIT_CONVERSION,
+    CASE 
+      WHEN t1.ORDERED_UNITS > 0 THEN t1.ORDERED_REVENUE * 1.0 / t1.ORDERED_UNITS 
+      ELSE 0 
+    END AS AVG_SELLING_PRICE
+  FROM sales_data t1
+  INNER JOIN glance_views t2
+    ON t1.SKU_NAME = t2.SKU_NAME AND t1.FEED_DATE = t2.FEED_DATE
+  WHERE t1.ORDERED_UNITS > 0 AND t2.VIEWS > 0
 )
-select SKU_NAME, round(sum(lost_sales),2) as lost_sales 
-from
-(
-select SKU_NAME, FEED_DATE, (VIEWS)*(UNIT_CONVERSION)*(REP_OOS)*(avg_selling_price) as lost_sales
-from merged
-) as t
-group by 1
-order by 2 DESC;
-
+SELECT 
+  ROUND(SUM(VIEWS * UNIT_CONVERSION * REP_OOS_RATIO * AVG_SELLING_PRICE), 2) AS total_lost_sales,
+  ROUND(SUM(ORDERED_REVENUE), 2) AS total_actual_sales,
+  ROUND(SUM(VIEWS * UNIT_CONVERSION * REP_OOS_RATIO * AVG_SELLING_PRICE) 
+        / NULLIF(SUM(ORDERED_REVENUE), 0) * 100, 2) AS lost_sales_pct
+FROM merged;
