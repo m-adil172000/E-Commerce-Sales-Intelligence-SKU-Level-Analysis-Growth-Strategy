@@ -59,6 +59,9 @@ These tables are related via SKU and date as shown below:
 
 *Table: Example daily site totals around July 15, 2019 (bold shows the spike on the sale day).*
 
+  <img width="556" height="464" alt="image" src="https://github.com/user-attachments/assets/3746266d-0321-4250-91e4-9e7fb7619b9c" />
+
+
 **Subcategory Growth Trends:** We analyzed month-over-month revenue to find which subcategories lagged their category.  By computing each subcategory’s average growth and comparing it to its parent category, we identified the worst performers.  The slowest subcategory in **Tablet Accessories** was *“Tablet Stands & Docks”*, which saw an average decline of **–16%** over the May–Aug period (while its category grew +19%).  Similarly, in **Computer Peripherals**, *“Keyboards – DELETED”* dropped **–28%** vs. a +18% category average.  These divergences suggest issues like overstock or weak demand.  In practice, we should review such subcategories (e.g. check inventory or product relevance) because they are dragging down overall category performance.
 
 | Subcategory           | Category             | Cat Avg Growth | Subcat Avg Growth |
